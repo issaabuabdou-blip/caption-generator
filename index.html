@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INA Captions</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --border: #2a2a2a;
+    --accent: #00555A;
+    --accent-dim: rgba(0, 85, 90, 0.15);
+    --text: #f0f0f0;
+    --muted: #666;
+    --muted2: #444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    padding: 28px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.3px;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-left: auto;
+    text-transform: uppercase;
+  }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    min-height: calc(100vh - 73px);
+  }
+
+  /* Left Panel */
+  .left-panel {
+    border-right: 1px solid var(--border);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 73px;
+    height: calc(100vh - 73px);
+    overflow-y: auto;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  /* Niche Selector */
+  .niche-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .niche-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+  }
+
+  .niche-btn:hover {
+    border-color: var(--muted2);
+    background: var(--surface2);
+  }
+
+  .niche-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .niche-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .niche-desc {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .niche-btn.active .niche-name { color: var(--accent); }
+
+  /* Textarea */
+  .script-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    resize: none;
+    width: 100%;
+    min-height: 200px;
+    flex: 1;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .script-area:focus {
+    border-color: var(--accent);
+  }
+
+  .script-area::placeholder {
+    color: var(--muted2);
+  }
+
+  /* Generate Button */
+  .gen-btn {
+    background: var(--accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gen-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,85,90,0.3); }
+  .gen-btn:active { transform: translateY(0); }
+  .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Right Panel */
+  .right-panel {
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    overflow-y: auto;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+    opacity: 0.3;
+  }
+
+  .empty-icon {
+    font-size: 48px;
+  }
+
+  .empty-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  /* Caption Card */
+  .caption-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    animation: slideUp 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .caption-card:nth-child(2) { animation-delay: 0.08s; }
+  .caption-card:nth-child(3) { animation-delay: 0.16s; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .var-badge {
+    background: var(--accent);
+    color: #ffffff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .var-type {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  .caption-body {
+    padding: 24px;
+  }
+
+  .caption-hook {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.4;
+    margin-bottom: 14px;
+    letter-spacing: -0.2px;
+  }
+
+  .caption-text {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #c8c8c8;
+    white-space: pre-wrap;
+    margin-bottom: 18px;
+  }
+
+  .caption-cta {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+
+  .hashtag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 6px;
+  }
+
+  .hashtag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .hashtag:hover { color: var(--accent); border-color: var(--muted2); }
+
+  /* Char counter */
+  .char-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .char-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .char-count {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 6px;
+  }
+
+  /* Loading */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .skeleton {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    animation: pulse 1.4s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .skel-line {
+    height: 12px;
+    background: var(--surface2);
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .skel-line.short { width: 40%; }
+  .skel-line.med { width: 70%; }
+  .skel-line.long { width: 95%; }
+
+  /* Error */
+  .error-msg {
+    background: rgba(255,80,80,0.08);
+    border: 1px solid rgba(255,80,80,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    color: #ff6b6b;
+    font-size: 13px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .left-panel { position: static; height: auto; }
+    .header { padding: 20px; }
+    .header-sub { display: none; }
+    .right-panel { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-mark">IN</div>
+  <span class="header-title">INA Caption System</span>
+  <span class="header-sub">Script → Caption</span>
+</header>
+
+<div class="layout">
+  <!-- Left Panel -->
+  <div class="left-panel">
+
+    <div>
+      <div class="section-label">Niche</div>
+      <div class="niche-grid" id="nicheGrid">
+        <button class="niche-btn active" data-niche="physio">
+          <span class="niche-name">Physiotherapy</span>
+          <span class="niche-desc">Clinics, rehab, injury recovery</span>
+        </button>
+        <button class="niche-btn" data-niche="medspa">
+          <span class="niche-name">Med Spa</span>
+          <span class="niche-desc">Aesthetics, botox, facials</span>
+        </button>
+        <button class="niche-btn" data-niche="wellness">
+          <span class="niche-name">Massage / Chiro</span>
+          <span class="niche-desc">Manual therapy, mobility</span>
+        </button>
+        <button class="niche-btn" data-niche="smma">
+          <span class="niche-name">Social Media</span>
+          <span class="niche-desc">Agencies, freelancers</span>
+        </button>
+      </div>
+    </div>
+
+
+    <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+      <div class="section-label">Video Script</div>
+      <textarea
+        class="script-area"
+        id="scriptInput"
+        placeholder="Paste your video script here...&#10;&#10;e.g. 'If your lower back hurts every morning, this is probably why. Most people think it's their mattress...'"
+      ></textarea>
+      <div class="char-bar"><div class="char-fill" id="charFill" style="width:0%"></div></div>
+      <div class="char-count"><span id="charCount">0</span> / 2200 chars</div>
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="generateCaptions()">
+      Generate Captions →
+    </button>
+
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel" id="rightPanel">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">✦</div>
+      <div class="empty-text">Paste a script and hit generate</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // State
+  let selectedNiche = 'physio';
+  // Niche selection
+  document.getElementById('nicheGrid').addEventListener('click', e => {
+    const btn = e.target.closest('.niche-btn');
+    if (!btn) return;
+    document.querySelectorAll('.niche-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedNiche = btn.dataset.niche;
+  });
+
+  // Char counter
+  document.getElementById('scriptInput').addEventListener('input', function() {
+    const len = this.value.length;
+    document.getElementById('charCount').textContent = len;
+    document.getElementById('charFill').style.width = Math.min((len / 2200) * 100, 100) + '%';
+  });
+
+  // Niche labels
+  const nicheLabels = {
+    physio: 'Physiotherapy',
+    medspa: 'Med Spa / Aesthetics',
+    wellness: 'Massage & Chiro',
+    smma: 'Social Media Agency'
+  };
+
+  // Var type labels
+  const varTypes = ['HOOK-LED', 'STORY-LED', 'DIRECT'];
+
+  function buildPrompt(script) {
+    const niche = nicheLabels[selectedNiche];
+    return `You write Instagram captions for health, wellness, and social media businesses. Your job is to sound like a real human creator — NOT like AI.
+
+NICHE: ${niche}
+TONE: Direct, punchy, confident, zero fluff. Short sharp sentences. Say the thing plainly. No buildup, no softening. Think Hormozi — every sentence earns its place or it gets cut. Never write to impress, write to land.
+
+STRICT RULES (never break these):
+- Zero em dashes (—). Use commas, periods, or line breaks instead.
+- No bullet points or numbered lists inside captions.
+- No corporate buzzwords: "holistic", "elevate", "transform your life", "journey", "unlock your potential", "game-changer", "paradigm".
+- No AI tell-signs: don't start sentences with "In today's world", "Did you know?", "It's no secret that", "As a [profession]".
+- No generic motivational fluff. Every line must be specific and useful or provoke a reaction.
+- Captions must feel like they came from the account owner — personal, direct, credible.
+- Use line breaks naturally (1-2 sentences per paragraph max for Reels captions).
+- Keep the hook under 125 characters (that's all Instagram shows before "...more").
+
+CAPTION STRUCTURE:
+- Hook (1 line, stops the scroll — bold claim, uncomfortable truth, or a specific result)
+- Body (2-3 short paragraphs, delivers the value from the script or tells a micro-story)
+- CTA (1 line — drives saves, DM, or comments. Keep it human, not robotic)
+- 5 hashtags (niche-specific, mix of mid-size and small — NO mega hashtags over 10M posts)
+
+OUTPUT FORMAT (JSON only, no markdown, no extra text):
+{
+  "captions": [
+    {
+      "type": "HOOK-LED",
+      "hook": "...",
+      "body": "...",
+      "cta": "...",
+      "hashtags": ["#...", "#...", "#...", "#...", "#..."]
+    },
+    {
+      "type": "STORY-LED",
+      "hook": "...",
+      "body": "...",
+      "cta": "...",
+      "hashtags": ["#...", "#...", "#...", "#...", "#..."]
+    },
+    {
+      "type": "DIRECT",
+      "hook": "...",
+      "body": "...",
+      "cta": "...",
+      "hashtags": ["#...", "#...", "#...", "#...", "#..."]
+    }
+  ]
+}
+
+VIDEO SCRIPT TO CONVERT:
+${script}`;
+  }
+
+  async function generateCaptions() {
+    const script = document.getElementById('scriptInput').value.trim();
+    if (!script) {
+      alert('Paste your script first.');
+      return;
+    }
+
+    const btn = document.getElementById('genBtn');
+    const panel = document.getElementById('rightPanel');
+
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    // Show loading
+    panel.innerHTML = `
+      <div class="loading-state">
+        ${[1,2,3].map(() => `
+          <div class="skeleton">
+            <div class="skel-line short"></div>
+            <div class="skel-line long"></div>
+            <div class="skel-line med"></div>
+            <div class="skel-line long"></div>
+            <div class="skel-line med"></div>
+          </div>
+        `).join('')}
+      </div>`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          messages: [{ role: 'user', content: buildPrompt(script) }]
+        })
+      });
+
+      const data = await response.json();
+      const raw = data.content.map(i => i.text || '').join('');
+      const clean = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+
+      renderCaptions(parsed.captions);
+
+    } catch (err) {
+      panel.innerHTML = `<div class="error-msg">Something went wrong. Check your script and try again.<br><small style="opacity:0.6;margin-top:6px;display:block;">${err.message}</small></div>`;
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Generate Captions →';
+  }
+
+  function renderCaptions(captions) {
+    const panel = document.getElementById('rightPanel');
+    panel.innerHTML = '';
+
+    captions.forEach((cap, i) => {
+      const fullCaption = `${cap.hook}\n\n${cap.body}\n\n${cap.cta}\n\n${cap.hashtags.join(' ')}`;
+      const charLen = fullCaption.length;
+
+      const card = document.createElement('div');
+      card.className = 'caption-card';
+      card.style.animationDelay = (i * 0.08) + 's';
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="card-label">
+            <span class="var-badge">V${i+1}</span>
+            <span class="var-type">${cap.type}</span>
+          </div>
+          <button class="copy-btn" onclick="copyCaption(this, ${JSON.stringify(fullCaption).replace(/'/g, "&#39;")})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="caption-body">
+          <div class="caption-hook">${escapeHtml(cap.hook)}</div>
+          <div class="caption-text">${escapeHtml(cap.body)}</div>
+          <div class="caption-cta">${escapeHtml(cap.cta)}</div>
+          <div class="hashtag-row">
+            ${cap.hashtags.map(h => `<span class="hashtag">${escapeHtml(h)}</span>`).join('')}
+          </div>
+          <div style="margin-top:14px; font-size:10px; color:var(--muted);">${charLen} characters</div>
+        </div>
+      `;
+
+      panel.appendChild(card);
+    });
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function copyCaption(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 15 4 10"/></svg> Copied`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
